@@ -1,0 +1,129 @@
+void TRACommand7::BuildGraph()
+{
+
+
+
+  CATDialogState * FirstPointSelectionState = GetInitialState("FirstPointSelection");
+
+  CATDialogState * SecondPointSelectionState = AddDialogState("FSecondPointSelection");
+
+
+
+
+  pFirstPointAgent = new CATPathElementAgent("FirstPointAgent");
+
+  pSecondPointAgent = new CATPathElementAgent("SecondPointAgent");
+
+  if(!pFirstPointAgent)
+	  
+	  return; 
+
+  pFirstPointAgent->AddElementType(IID_CATIGSMPoint);
+
+  pSecondPointAgent->AddElementType(IID_CATIGSMPoint);
+
+  FirstPointSelectionState -> AddDialogAgent (pFirstPointAgent);
+
+  SecondPointSelectionState -> AddDialogAgent (pSecondPointAgent);
+
+
+  CATStateCondition * pFirstPointCondition = IsOutputSetCondition(pFirstPointAgent);
+
+  CATDiaAction * pFirstPointAction = Action ((ActionMethod) (&TRACommand7::SelectFirstPoint));
+  
+  AddTransition( FirstPointSelectionState, SecondPointSelectionState, pFirstPointCondition, pFirstPointAction);
+
+  CATStateCondition * pSecondPointCondition = IsOutputSetCondition(pSecondPointAgent);
+
+  CATDiaAction * pSecondPointAction = Action ((ActionMethod) (&TRACommand7::SelectSecondPoint));
+
+
+  AddTransition( SecondPointSelectionState, NULL, pSecondPointCondition, pSecondPointAction);
+
+
+}
+
+
+//-------------------------------------------------------------------------
+// ActionOne ()
+//-------------------------------------------------------------------------
+CATBoolean TRACommand7::SelectFirstPoint()
+{
+	CATBaseUnknown * pPointBaseUnknown = pFirstPointAgent->GetElementValue();
+
+	spFirstPoint = pPointBaseUnknown;
+
+
+
+  return TRUE;
+
+
+}
+
+
+
+CATBoolean TRACommand7::SelectSecondPoint()
+
+{
+	CATBaseUnknown * pPointBaseUnknown = pSecondPointAgent->GetElementValue();
+
+	spSecondPoint = pPointBaseUnknown;
+
+	GetEditor();
+
+	CATIGSMFactory_var spGSMFactory = spPrtContainer;
+
+	CATIGSMLinePtPt_var spLine = spGSMFactory->CreateLine(spFirstPoint,spSecondPoint);
+	CATISpecObject_var spLineObj = spLine;
+	InsertInProceduralView(spLineObj);
+
+
+  return TRUE;
+
+
+}
+
+
+void TRACommand7::GetEditor()
+
+{
+
+    CATFrmEditor *pEditor = NULL;
+
+	pEditor = CATFrmEditor::GetCurrentEditor();
+
+	CATDocument *pDocument = NULL;
+
+	pDocument = pEditor->GetDocument();
+
+	CATInit_var spInit = pDocument;
+
+	CATBaseUnknown *pRootContainer = spInit->GetRootContainer("CATIPrtContainer"); 
+
+    CATIPrtContainer *pPrtContainer = (CATIPrtContainer*)pRootContainer;
+
+    spPrtContainer = pPrtContainer;
+
+
+}
+
+
+void TRACommand7::InsertInProceduralView(CATISpecObject_var &ispSpecObject)
+{
+	CATTry
+	{
+		if(!ispSpecObject)
+			return;
+		CATIGSMProceduralView_var spGSMProcView = ispSpecObject;
+		if(!!spGSMProcView)
+		{
+			spGSMProcView->InsertInProceduralView();
+			ispSpecObject->Update();
+		}
+	}
+	CATCatch(CATError, pError)
+	{
+
+	}
+	CATEndTry;
+}
