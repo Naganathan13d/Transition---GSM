@@ -68,6 +68,8 @@ class TRACommand7: public CATStateCommand
 
   void InsertInProceduralView(CATISpecObject_var &ispSpecObject);
   
+  void MsgBox(const CATUnicodeString& msg, const CATUnicodeString& title, CATDlgStyle style=CATDlgNfyInformation);
+  
 
 
   private:
