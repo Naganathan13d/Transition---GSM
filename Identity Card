@@ -23,6 +23,7 @@ AddPrereqComponent("GSMInterfaces",Protected);
 AddPrereqComponent("MecModInterfaces",Protected);
 AddPrereqComponent("ObjectModelerBase",Protected);
 AddPrereqComponent("ObjectSpecsModeler",Protected);
+AddPrereqComponent("Dialog",Protected);
 
 
  
