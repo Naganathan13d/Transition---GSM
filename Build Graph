@@ -106,6 +106,8 @@ void TRACommand7::BuildGraph()
 
 
   AddTransition( SecondPointSelectionState, NULL, pSecondPointCondition, pSecondPointAction);
+  
+  MsgBox("Select Two pints to create a line", "Line Creation");
 
 
 }
@@ -194,6 +196,30 @@ void TRACommand7::InsertInProceduralView(CATISpecObject_var &ispSpecObject)
 	}
 	CATEndTry;
 }
+
+void TRACommand7::MsgBox(const CATUnicodeString& msg, const CATUnicodeString& title, CATDlgStyle  style)
+{
+
+ CATApplicationFrame * pApplicationFrame =  CATApplicationFrame::GetFrame();
+  if(!!pApplicationFrame)
+  {
+
+	  CATDlgWindow * pDlgWindow = pApplicationFrame->GetMainWindow();
+
+	  if(!!pDlgWindow)
+  {
+
+	  CATDlgNotify *pMessageBox = new CATDlgNotify(pDlgWindow, "Window", style);
+	  pMessageBox->DisplayBlocked("Select Two Points to Create a Line", "Line State Chart");
+	  pMessageBox->RequestDelayedDestruction();
+
+	  }  
+  
+  
+  }
+
+}
+
 
 
 
